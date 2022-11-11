@@ -13,7 +13,7 @@ class Timer:
 
     def deactivate(self):
         self.active: bool = False
-        self.start_time: datetime = datetime(0, 0, 0, 0, 0, 0, 0)
+        self.start_time: datetime = datetime(1, 1, 1, 1, 1, 1, 1)
 
     def update(self):
         if self.active:

@@ -90,28 +90,28 @@ class KeyManager:
         }
 
     def find_monitor_rect(self) -> None:
-        if self.monitor is None:
-            for difficulty in self.play_areas:
-                with mss.mss() as screen_shot:
-                    # Get monitor[1] (primary monitor)
-                    monitor: dict[str, int] = screen_shot.monitors[0]
+        # if self.monitor is None:
+        for difficulty in self.play_areas:
+            with mss.mss() as screen_shot:
+                # Get monitor[1] (primary monitor)
+                monitor: dict[str, int] = screen_shot.monitors[0]
 
-                    master_image: ndarray = array(screen_shot.grab(monitor))
-                    master_image: ndarray = cvtColor(master_image, COLOR_BGRA2BGR)
-                    slave_image: ndarray = self.play_areas[difficulty]
+                master_image: ndarray = array(screen_shot.grab(monitor))
+                master_image: ndarray = cvtColor(master_image, COLOR_BGRA2BGR)
+                slave_image: ndarray = self.play_areas[difficulty]
 
-                    res_s: float = matchTemplate(master_image, slave_image, TM_CCOEFF_NORMED)
-                    threshold: float = 0.8
-                    loc: ndarray = where(res_s >= threshold)
+                res_s: float = matchTemplate(master_image, slave_image, TM_CCOEFF_NORMED)
+                threshold: float = 0.8
+                loc: ndarray = where(res_s >= threshold)
 
-                    if len(loc[0]) > 0:
-                        self.monitor: dict[str, int] = {'left': loc[1][0],
-                                                        'top': loc[0][0],
-                                                        'height': len(slave_image),
-                                                        'width': self.x_offset}
-                        self.timer.activate()
+                if len(loc[0]) > 0:
+                    self.monitor: dict[str, int] = {'left': loc[1][0],
+                                                    'top': loc[0][0],
+                                                    'height': len(slave_image),
+                                                    'width': self.x_offset}
+                    self.timer.activate()
 
-                        return
+                    return
 
     def run(self) -> None:
         if self.monitor is None:
