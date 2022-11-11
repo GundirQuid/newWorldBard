@@ -9,13 +9,16 @@ from src.press_key.press_mouse_key import PressMouseKey
 
 
 class KeyManager:
-    def __init__(self, loop_sleep: float = 0.1, x_offset: int = 60):
+    def __init__(self,
+                 use_virtual_keys: bool = False,
+                 loop_sleep: float = 0.1,
+                 x_offset: int = 60):
         # Change to false if keys are not being sent,
         # indicates virtual key codes are not accepted,
         # and we should use hardware codes,
         # though this is microsoft codes in reality,
         # unsure of other platforms
-        self.use_virtual_keys: bool = False
+        self.use_virtual_keys: bool = use_virtual_keys
         self.timer = Timer(duration_in_milliseconds=5000)
 
         # WARNING: Positional is measured with 1920x1080.

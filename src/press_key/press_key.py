@@ -11,7 +11,7 @@ class PressKey(ABC):
     def __init__(self, image: np.ndarray,
                  letter: Union[str, list],
                  timer_milliseconds: int = 0,
-                 use_vk: bool = True,
+                 use_vk: bool = False,
                  master_timer: Timer = None):
         # Disable built in pause and failsafe,
         # since we only trigger during performance mode,

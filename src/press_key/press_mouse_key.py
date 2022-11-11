@@ -10,7 +10,7 @@ class PressMouseKey(PressKey):
                  button: list,
                  timer_milliseconds: int = 0,
                  timer_mouse_milliseconds: int = 100,
-                 use_vk: bool = True,
+                 use_vk: bool = False,
                  master_timer: Timer = None):
         super().__init__(image=image,
                          letter=button,
