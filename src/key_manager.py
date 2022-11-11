@@ -19,7 +19,7 @@ class KeyManager:
         # though this is microsoft codes in reality,
         # unsure of other platforms
         self.use_virtual_keys: bool = use_virtual_keys
-        self.timer = Timer(duration_in_milliseconds=5000)
+        self.timer: Timer = Timer(duration_in_milliseconds=5000)
 
         # WARNING: Positional is measured with 1920x1080.
         # If your monitor differs, check positionals!
@@ -42,7 +42,7 @@ class KeyManager:
         for key in self.press_key:
             self.press_key[key].check_press_key_trigger(master_image=self.image)
 
-    def get_play_areas(self):
+    def get_play_areas(self) -> None:
         # load in base images, 1920x1080
         self.play_areas = {
             'novice': imread('images/play_area/1920_1080_novice.png'),
@@ -94,22 +94,21 @@ class KeyManager:
             for difficulty in self.play_areas:
                 with mss.mss() as screen_shot:
                     # Get monitor[1] (primary monitor)
-                    monitor = screen_shot.monitors[0]
+                    monitor: dict[str, int] = screen_shot.monitors[0]
 
-                    master_image = array(screen_shot.grab(monitor))
-                    master_image = cvtColor(master_image, COLOR_BGRA2BGR)
-                    slave_image = self.play_areas[difficulty]
+                    master_image: ndarray = array(screen_shot.grab(monitor))
+                    master_image: ndarray = cvtColor(master_image, COLOR_BGRA2BGR)
+                    slave_image: ndarray = self.play_areas[difficulty]
 
-                    res_s = matchTemplate(master_image, slave_image, TM_CCOEFF_NORMED)
-                    threshold = 0.8
-                    loc = where(res_s >= threshold)
+                    res_s: float = matchTemplate(master_image, slave_image, TM_CCOEFF_NORMED)
+                    threshold: float = 0.8
+                    loc: ndarray = where(res_s >= threshold)
 
-                    # TODO: How do we know the image size? We only have possible y,x combinations
                     if len(loc[0]) > 0:
-                        self.monitor = {'left': loc[1][0],
-                                        'top': loc[0][0],
-                                        'height': len(slave_image),
-                                        'width': self.x_offset}
+                        self.monitor: dict[str, int] = {'left': loc[1][0],
+                                                        'top': loc[0][0],
+                                                        'height': len(slave_image),
+                                                        'width': self.x_offset}
                         self.timer.activate()
 
                         return
@@ -130,6 +129,6 @@ class KeyManager:
 
             if self.timer.active:
                 with mss.mss() as screen_shot:
-                    self.image = array(screen_shot.grab(self.monitor))
-                    self.image = cvtColor(self.image, COLOR_BGRA2BGR)
+                    self.image: ndarray = array(screen_shot.grab(self.monitor))
+                    self.image: ndarray = cvtColor(self.image, COLOR_BGRA2BGR)
                     self.check_for_key_presses()
