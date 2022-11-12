@@ -31,7 +31,7 @@ class PressKey(ABC):
         self.timer.update()
         if not self.timer.active:
             res_s: float = matchTemplate(master_image, self.image, TM_CCOEFF_NORMED)
-            threshold: float = 0.9
+            threshold: float = 0.8
             loc: ndarray = where(res_s >= threshold)
 
             if len(loc[0]) > 0:

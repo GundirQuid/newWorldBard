@@ -12,7 +12,8 @@ class KeyManager:
     def __init__(self,
                  use_virtual_keys: bool = False,
                  loop_sleep: float = 0.1,
-                 x_offset: int = 60):
+                 x_offset: int = 60,
+                 game_monitor: int = 1):
         # Change to false if keys are not being sent,
         # indicates virtual key codes are not accepted,
         # and we should use hardware codes,
@@ -37,6 +38,7 @@ class KeyManager:
         self.image: ndarray = None
         self.loop_sleep: float = loop_sleep
         self.x_offset: int = x_offset
+        self.game_monitor: int = game_monitor
 
     def check_for_key_presses(self) -> None:
         for key in self.press_key:
@@ -45,46 +47,46 @@ class KeyManager:
     def get_play_areas(self) -> None:
         # load in base images, 1920x1080
         self.play_areas = {
-            'novice': imread('images/play_area/1920_1080_novice.png'),
-            'skilled': imread('images/play_area/1920_1080_skilled.png'),
-            'expert': imread('images/play_area/1920_1080_expert.png'),
+            'novice': imread('images/play_area/novice.png'),
+            'skilled': imread('images/play_area/skilled.png'),
+            'expert': imread('images/play_area/expert.png'),
         }
 
     def get_press_keys(self) -> None:
         self.press_key = {
             'key_w': PressKeyboardKey(letter='w',
-                                      timer_milliseconds=100,
-                                      image=imread('images/buttons/1920_1080_w.png'),
+                                      timer_milliseconds=200,
+                                      image=imread('images/buttons/w.png'),
                                       use_vk=self.use_virtual_keys,
                                       master_timer=self.timer),
 
             'key_a': PressKeyboardKey(letter='a',
-                                      timer_milliseconds=100,
-                                      image=imread('images/buttons/1920_1080_a.png'),
+                                      timer_milliseconds=200,
+                                      image=imread('images/buttons/a.png'),
                                       use_vk=self.use_virtual_keys,
                                       master_timer=self.timer),
 
             'key_s': PressKeyboardKey(letter='s',
-                                      timer_milliseconds=100,
-                                      image=imread('images/buttons/1920_1080_s.png'),
+                                      timer_milliseconds=200,
+                                      image=imread('images/buttons/s.png'),
                                       use_vk=self.use_virtual_keys,
                                       master_timer=self.timer),
 
             'key_d': PressKeyboardKey(letter='d',
-                                      timer_milliseconds=100,
-                                      image=imread('images/buttons/1920_1080_d.png'),
+                                      timer_milliseconds=200,
+                                      image=imread('images/buttons/d.png'),
                                       use_vk=self.use_virtual_keys,
                                       master_timer=self.timer),
 
             'key_space': PressKeyboardKey(letter='space',
-                                          timer_milliseconds=100,
-                                          image=imread('images/buttons/1920_1080_space.png'),
+                                          timer_milliseconds=200,
+                                          image=imread('images/buttons/space_bar.png'),
                                           use_vk=self.use_virtual_keys,
                                           master_timer=self.timer),
 
             'key_mouse': PressMouseKey(button=['left', 'right'],
-                                       timer_milliseconds=100,
-                                       image=imread('images/buttons/1920_1080_mouse.png'),
+                                       timer_milliseconds=200,
+                                       image=imread('images/buttons/both_mouse_buttons.png'),
                                        use_vk=self.use_virtual_keys,
                                        master_timer=self.timer)
         }
@@ -93,8 +95,7 @@ class KeyManager:
         # if self.monitor is None:
         for difficulty in self.play_areas:
             with mss.mss() as screen_shot:
-                # Get monitor[1] (primary monitor)
-                monitor: dict[str, int] = screen_shot.monitors[0]
+                monitor: dict[str, int] = screen_shot.monitors[self.game_monitor]
 
                 master_image: ndarray = array(screen_shot.grab(monitor))
                 master_image: ndarray = cvtColor(master_image, COLOR_BGRA2BGR)
@@ -114,21 +115,25 @@ class KeyManager:
                     return
 
     def run(self) -> None:
-        if self.monitor is None:
-            self.find_monitor_rect()
-
-        while True:
-            self.timer.update()
-            if not self.timer.active:
+        try:
+            if self.monitor is None:
                 self.find_monitor_rect()
 
-                # Timer did not activate when looking for position, wait {self.loop_sleep}s before rechecking
-                # Default is 0.1s sleep timer, missing about 10 frames @ 60 fps, which is fine
+            while True:
+                self.timer.update()
                 if not self.timer.active:
-                    sleep(self.loop_sleep)
+                    self.find_monitor_rect()
 
-            if self.timer.active:
-                with mss.mss() as screen_shot:
-                    self.image: ndarray = array(screen_shot.grab(self.monitor))
-                    self.image: ndarray = cvtColor(self.image, COLOR_BGRA2BGR)
-                    self.check_for_key_presses()
+                    # Timer did not activate when looking for position, wait {self.loop_sleep}s before rechecking
+                    # Default is 0.1s sleep timer, missing about 10 frames @ 60 fps, which is fine
+                    if not self.timer.active:
+                        sleep(self.loop_sleep)
+
+                if self.timer.active:
+                    with mss.mss() as screen_shot:
+                        self.image: ndarray = array(screen_shot.grab(self.monitor))
+                        self.image: ndarray = cvtColor(self.image, COLOR_BGRA2BGR)
+                        self.check_for_key_presses()
+
+        except KeyboardInterrupt:
+            return
