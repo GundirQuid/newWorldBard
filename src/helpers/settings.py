@@ -13,4 +13,4 @@ PRINT_KEY_PRESS: bool = config['DEFAULT'].getboolean('print_key_press')
 GAME_TITLE: str = 'New World Bard'
 BUILD_NUMBER_MAJOR: int = 1
 BUILD_NUMBER_MINOR: int = 2
-BUILD_NUMBER_REVISION: int = 1
+BUILD_NUMBER_REVISION: int = 2

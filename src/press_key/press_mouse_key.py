@@ -15,7 +15,6 @@ class PressMouseKey(PressKey):
         super().__init__(image=image,
                          letter=button,
                          timer_milliseconds=timer_milliseconds,
-
                          use_vk=use_vk,
                          master_timer=master_timer)
         self.timer_hold_mouse_button_down = Timer(timer_mouse_milliseconds)

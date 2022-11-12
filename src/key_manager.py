@@ -92,7 +92,6 @@ class KeyManager:
         }
 
     def find_monitor_rect(self) -> None:
-        # if self.monitor is None:
         for difficulty in self.play_areas:
             with mss.mss() as screen_shot:
                 monitor: dict[str, int] = screen_shot.monitors[self.game_monitor]
